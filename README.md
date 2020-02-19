@@ -19,7 +19,8 @@ Usage
 -----
 
 ```
-	./docfind.py #needs to be run again after each query
+	$ cd <dir with documents to be scanned
+	$ ./docfind.py #needs to be run again after each query
 ```
 
 Planned updates
