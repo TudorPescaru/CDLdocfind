@@ -19,7 +19,7 @@ Usage
 -----
 
 ```
-	$ cd <dir with documents to be scanned
+	$ cd < dir with documents to be scanned >
 	$ ./docfind.py #needs to be run again after each query
 ```
 
