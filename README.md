@@ -22,3 +22,11 @@ Usage
 	./docfind.py #needs to be run again after each query
 ```
 
+Planned updates
+-----
+
+* Add a GUI
+* Implement databases to store word values
+* Create custom set of tests
+* Improve search engine efficiency by implementing tf-idf
+
