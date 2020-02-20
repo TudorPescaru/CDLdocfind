@@ -8,11 +8,14 @@ from tkinter import *
 program = Tk()
 program.title("docfind")
 
-inp = Entry(program, width=50, borderwidth=5)
-inp.grid(row=0, column=0, padx=10, pady=10)
+here = Label(program, text="Input query here:", width=18, borderwidth=5)
+here.grid(row=0, column=0)
 
-out = Text(program, width=60, height=10, borderwidth=5)
-out.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+inp = Entry(program, width=50, borderwidth=5)
+inp.grid(row=0, column=1, padx=10, pady=10)
+
+out = Text(program, width=70, height=10, borderwidth=5)
+out.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
 
 """Function that attempts to find word in file"""
 
@@ -102,7 +105,14 @@ def run():
 	if len(query) > 0:
 		ls = os.popen("ls").read()
 		files = list(ls.split('\n'))
-		files = files[:-2]
+		del files[files.index("docfind.py")]
+		del files[files.index('')]
+		# files = files[:-2]
+		out.insert(INSERT, "Documents scanned: ")
+		out.insert(INSERT, files[0])
+		for doc in files[1:]:
+			out.insert(INSERT, ", " + doc)
+		out.insert(INSERT, '\n')
 		query = query.replace('(', ' ( ')
 		query = query.replace(')', ' ) ')
 		query = list(query.split())
@@ -137,7 +147,7 @@ def run():
 	else:
 		out.insert(INSERT, "No query given!\n")
 
-go = Button(program, text="GO!", padx=10, pady=10, command=run)
-go.grid(row=0, column=1)
+go = Button(program, text="GO!", padx=10, pady=10, borderwidth=5, command=run)
+go.grid(row=0, column=2)
 
 program.mainloop()
