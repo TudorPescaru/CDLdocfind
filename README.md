@@ -20,6 +20,7 @@ Usage
 
 ```
 	$ cd < dir with documents to be scanned >
+	$ wget curl https://github.com/TudorPescaru/CDLdocfind/blob/master/docfind.py
 	$ ./docfind.py #needs to be run again after each query
 ```
 
