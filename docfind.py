@@ -11,18 +11,43 @@ program.title("docfind")
 here = Label(program, text="Input query here:", width=18, borderwidth=5)
 here.grid(row=0, column=0)
 
+fs = Label(program, text="Select files to scan:", width=21, borderwidth=5)
+fs.grid(row=2, column=0)
+
+scroll1 = Scrollbar(program, orient=VERTICAL)
+scroll2 = Scrollbar(program, orient=VERTICAL)
+
 inp = Entry(program, width=50, borderwidth=5)
 inp.grid(row=0, column=1, padx=10, pady=10)
 
-out = Text(program, width=70, height=10, borderwidth=5)
+out = Text(program, width=70, height=10, borderwidth=5, yscrollcommand=scroll1.set)
 out.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
+out.configure(state='disabled')
+
+scroll1.place(in_=out, relx='1.0', relheight='1.0', bordermode='outside')
+scroll1.config(command=out.yview)
+
+filelist = Listbox(program, width=48, height=10, borderwidth=5, selectmode=MULTIPLE, yscrollcommand=scroll2.set)
+filelist.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
+
+scroll2.place(in_=filelist, relx='1.0', relheight='1.0', bordermode='outside')
+scroll2.config(command=filelist.yview)
+
+ls = os.popen("ls").read()
+files = list(ls.split('\n'))
+del files[files.index("docfind.py")]
+del files[files.index('')]
+for doc in files:
+	filelist.insert(END, doc)
 
 """Function that attempts to find word in file"""
 
 def find(file, word):
 	with open(file, 'r') as f:
 		for line in f:
-			if word in line.split() or word.casefold() in line.split():
+			if word in line.split():
+				return True
+			elif word.casefold() in line.split():
 				return True
 	return False
 
@@ -100,19 +125,16 @@ def run():
 
 	global inp
 	global out
+	global filelist
+
+	out.configure(state='normal')
 	out.delete('1.0', END)
+	out.configure(state='disabled')
 	query = inp.get()
+	
 	if len(query) > 0:
-		ls = os.popen("ls").read()
-		files = list(ls.split('\n'))
-		del files[files.index("docfind.py")]
-		del files[files.index('')]
-		# files = files[:-2]
-		out.insert(INSERT, "Documents scanned: ")
-		out.insert(INSERT, files[0])
-		for doc in files[1:]:
-			out.insert(INSERT, ", " + doc)
-		out.insert(INSERT, '\n')
+		select = filelist.curselection()
+		fileselect = [filelist.get(i) for i in select]
 		query = query.replace('(', ' ( ')
 		query = query.replace(')', ' ) ')
 		query = list(query.split())
@@ -122,7 +144,7 @@ def run():
 		for i in range(len(query)):
 			if query[i].isalpha():
 				values = []
-				for file in files:
+				for file in fileselect:
 					values.append(find(file, query[i]))
 				query[i] = values
 
@@ -133,19 +155,20 @@ def run():
 			query_not(query)
 			query_or(query) 
 			query_and(query)
-			# query_or() Not sure if operation order matters here
 
 		"""Print files that match query"""
 
+		out.configure(state='normal')
 		has_printed = 0
 		for i in range(len(query[0])):
 			if query[0][i] is True:
-				out.insert(INSERT, files[i] + " matches query.\n")
+				out.insert(INSERT, fileselect[i] + " matches query.\n")
 				has_printed = 1
 		if has_printed == 0:
 			out.insert(INSERT, "No file matches query.\n")
 	else:
 		out.insert(INSERT, "No query given!\n")
+	out.configure(state='disabled')
 
 go = Button(program, text="GO!", padx=10, pady=10, borderwidth=5, command=run)
 go.grid(row=0, column=2)
