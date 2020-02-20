@@ -8,17 +8,25 @@ from tkinter import *
 program = Tk()
 program.title("docfind")
 
+"""Text Lables"""
+
 here = Label(program, text="Input query here:", width=18, borderwidth=5)
 here.grid(row=0, column=0)
 
 fs = Label(program, text="Select files to scan:", width=21, borderwidth=5)
 fs.grid(row=2, column=0)
 
+"""Scrollbars for Text adn Listbox widgets"""
+
 scroll1 = Scrollbar(program, orient=VERTICAL)
 scroll2 = Scrollbar(program, orient=VERTICAL)
 
+"""Entry widget for user input"""
+
 inp = Entry(program, width=50, borderwidth=5)
 inp.grid(row=0, column=1, padx=10, pady=10)
+
+"""Text widget for displaying search results"""
 
 out = Text(program, width=70, height=10, borderwidth=5, yscrollcommand=scroll1.set)
 out.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
@@ -27,11 +35,15 @@ out.configure(state='disabled')
 scroll1.place(in_=out, relx='1.0', relheight='1.0', bordermode='outside')
 scroll1.config(command=out.yview)
 
+"""Listbox widget for allowing the user to select files to be scanned"""
+
 filelist = Listbox(program, width=48, height=10, borderwidth=5, selectmode=MULTIPLE, yscrollcommand=scroll2.set)
-filelist.grid(row=2, column=1, columnspan=2, padx=10, pady=10)
+filelist.grid(row=2, column=1, columnspan=2, rowspan=2, padx=10, pady=10)
 
 scroll2.place(in_=filelist, relx='1.0', relheight='1.0', bordermode='outside')
 scroll2.config(command=filelist.yview)
+
+"""Getting list of files in the local dir"""
 
 ls = os.popen("ls").read()
 files = list(ls.split('\n'))
@@ -39,6 +51,22 @@ del files[files.index("docfind.py")]
 del files[files.index('')]
 for doc in files:
 	filelist.insert(END, doc)
+
+"""Function for the select/deselect all button"""
+
+isClicked = False
+
+def de_sel():
+	global isClicked
+	if isClicked is False:
+		filelist.select_set(0, END)
+		isClicked = True
+		sel_txt.set("Deselect all")
+	else:
+		filelist.selection_clear(0, END)
+		isClicked = False
+		sel_txt.set("Select all")
+
 
 """Function that attempts to find word in file"""
 
@@ -119,13 +147,11 @@ def clear_par(query):
 				index = [x - 1 for x in index]
 				del query[index[i] + 2]
 
+"""Main function that is called when the GO! button is pressed"""
+
 def run():
 
-	"""Getting query input as well as files in dir"""
-
-	global inp
-	global out
-	global filelist
+	"""Getting query input"""
 
 	out.configure(state='normal')
 	out.delete('1.0', END)
@@ -133,6 +159,9 @@ def run():
 	query = inp.get()
 	
 	if len(query) > 0:
+
+		"""Getting list of selected files and converting the query for use"""
+
 		select = filelist.curselection()
 		fileselect = [filelist.get(i) for i in select]
 		query = query.replace('(', ' ( ')
@@ -167,10 +196,20 @@ def run():
 		if has_printed == 0:
 			out.insert(INSERT, "No file matches query.\n")
 	else:
+		out.configure(state='normal')
 		out.insert(INSERT, "No query given!\n")
 	out.configure(state='disabled')
 
-go = Button(program, text="GO!", padx=10, pady=10, borderwidth=5, command=run)
-go.grid(row=0, column=2)
+"""Buttons for various actions"""
+
+go = Button(program, text="GO!", borderwidth=5, command=run)
+go.grid(row=0, column=2, padx=10, pady=10)
+
+sel_txt = StringVar()
+sel = Button(program, textvariable=sel_txt, borderwidth=5, command=de_sel)
+sel.grid(row=3, column=0, padx=10, pady=10)
+sel_txt.set("Select all")
+
+"""Tkinter running loop"""
 
 program.mainloop()
