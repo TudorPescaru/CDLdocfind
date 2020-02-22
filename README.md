@@ -28,7 +28,7 @@ Planned updates
 -----
 
 * ~~Add a GUI~~
-* Implement databases to store word values
+* ~~Implement databases to store word values~~
 * Create custom set of tests
 * Improve search engine efficiency by implementing tf-idf
 
