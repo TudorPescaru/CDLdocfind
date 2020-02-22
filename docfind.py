@@ -12,8 +12,13 @@ if db is None:
 	print("Error accessing DB")
 	exit(-1)
 
+cursor = db.cursor()
+
+# Create primary key column for words
+
 try:
-	db.execute("CREATE TABLE WORDVAL (WORD VARCHAR(50) PRIMARY KEY NOT NULL);")
+	cursor.execute("DROP TABLE IF EXISTS WORDVAL")
+	cursor.execute("CREATE TABLE WORDVAL (WORD VARCHAR(50) PRIMARY KEY NOT NULL);")
 	db.commit()
 except Exception:
 	print("DB error")
@@ -63,10 +68,20 @@ scroll2.config(command=filelist.yview)
 
 ls = os.popen("ls").read()
 files = list(ls.split('\n'))
+del files[files.index("words.db")]
 del files[files.index("docfind.py")]
 del files[files.index('')]
-for doc in files:
-	filelist.insert(END, doc)
+for file in files:
+	filelist.insert(END, file)
+
+	# Create a column to store the find value for each file
+
+	try:
+		cursor.execute("""ALTER TABLE WORDVAL ADD COLUMN "%s" INT;""" % str(file))
+		db.commit()
+	except Exception:
+		db.rollback()
+		print("DB error")
 
 # Function for the select/deselect all button
 
@@ -184,13 +199,20 @@ def run():
 		query = query.replace(')', ' ) ')
 		query = list(query.split())
 
-		# Separation of query args and creating inv index values
+		# Separation of query args and creating inverted index values
 
 		for i in range(len(query)):
 			if query[i].isalpha():
 				values = []
+				cursor.execute("SELECT WORD FROM WORDVAL;")
+				words = cursor.fetchall()
+				words = [words[i][0] for i in range(len(words))]
+				if query[i] not in words:
+					cursor.execute("""INSERT INTO WORDVAL (WORD) VALUES ("%s");""" % query[i])
 				for file in fileselect:
 					values.append(find(file, query[i]))
+					val = 1 if find(file, query[i]) is True else 0
+					cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
 				query[i] = values
 
 		# Determine final value list
