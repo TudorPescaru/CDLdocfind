@@ -203,17 +203,27 @@ def run():
 
 		for i in range(len(query)):
 			if query[i].isalpha():
-				values = []
+
+				# Making sure each word in query exists in DB
+
 				cursor.execute("SELECT WORD FROM WORDVAL;")
 				words = cursor.fetchall()
 				words = [words[i][0] for i in range(len(words))]
 				if query[i] not in words:
 					cursor.execute("""INSERT INTO WORDVAL (WORD) VALUES ("%s");""" % query[i])
 				for file in fileselect:
-					values.append(find(file, query[i]))
+
+					# Populating DB with values for each word
+					
 					val = 1 if find(file, query[i]) is True else 0
 					cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
-				query[i] = values
+
+		# Generating processing-ready list from DB
+
+		cursor.execute("SELECT * FROM WORDVAL;")
+		data = cursor.fetchall()
+		for item in data:
+			query[query.index(item[0])] = [True if item[i] == 1 else False  for i in range(1, len(item))]
 
 		# Determine final value list
 
