@@ -22,7 +22,7 @@ https://drive.google.com/file/d/1LXAwPBsveZi2_Q3YI9bAosmyj-Xja1Op/view
 Usage
 -----
 
-Pyhton is required to be installed for the program to run.
+Pyhton as well as make are required to be installed for the program to run.
 
 ```
 	$ cd < dir with documents to be scanned >
