@@ -28,6 +28,7 @@ Pyhton is required to be installed for the program to run.
 	$ cd < dir with documents to be scanned >
 	$ wget https://raw.githubusercontent.com/TudorPescaru/CDLdocfind/master/Makefile
 	$ make
+	$ ./docfind.py
 ```
 
 Planned updates
