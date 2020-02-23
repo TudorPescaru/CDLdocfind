@@ -199,50 +199,56 @@ def run():
 		query = query.replace(')', ' ) ')
 		query = list(query.split())
 
-		# Separation of query args and creating inverted index values
+		if len(fileselect) > 0:
 
-		for i in range(len(query)):
-			if query[i].isalpha():
+			# Separation of query args and creating inverted index values
 
-				# Making sure each word in query exists in DB
+			for i in range(len(query)):
+				if query[i].isalpha():
 
-				cursor.execute("SELECT WORD FROM WORDVAL;")
-				words = cursor.fetchall()
-				words = [words[i][0] for i in range(len(words))]
-				if query[i] not in words:
-					cursor.execute("""INSERT INTO WORDVAL (WORD) VALUES ("%s");""" % query[i])
-				for file in fileselect:
+					# Making sure each word in query exists in DB
 
-					# Populating DB with values for each word
+					cursor.execute("SELECT WORD FROM WORDVAL;")
+					words = cursor.fetchall()
+					words = [words[i][0] for i in range(len(words))]
+					if query[i] not in words:
+						cursor.execute("""INSERT INTO WORDVAL (WORD) VALUES ("%s");""" % query[i])
+					for file in fileselect:
+
+						# Populating DB with values for each word
 					
-					val = 1 if find(file, query[i]) is True else 0
-					cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
+						val = 1 if find(file, query[i]) is True else 0
+						cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
 
-		# Generating processing-ready list from DB
+			# Generating processing-ready list from DB
 
-		cursor.execute("SELECT * FROM WORDVAL;")
-		data = cursor.fetchall()
-		for item in data:
-			query[query.index(item[0])] = [True if item[i] == 1 else False  for i in range(1, len(item))]
+			cursor.execute("SELECT * FROM WORDVAL;")
+			data = cursor.fetchall()
+			for item in data:
+				if item[0] in query:
+					query[query.index(item[0])] = [True if item[i] == 1 else False  for i in range(1, len(item))]
 
-		# Determine final value list
+			# Determine final value list
 
-		while len(query) > 1:
-			clear_par(query)
-			query_not(query)
-			query_or(query) 
-			query_and(query)
+			while len(query) > 1:
+				clear_par(query)
+				query_not(query)
+				query_or(query) 
+				query_and(query)
 
-		# Print files that match query
+			# Print files that match query
 
-		out.configure(state='normal')
-		has_printed = 0
-		for i in range(len(query[0])):
-			if query[0][i] is True:
-				out.insert(INSERT, fileselect[i] + " matches query.\n")
-				has_printed = 1
-		if has_printed == 0:
-			out.insert(INSERT, "No file matches query.\n")
+			out.configure(state='normal')
+			has_printed = 0
+			for i in range(len(query[0])):
+				if query[0][i] is True:
+					out.insert(INSERT, fileselect[i] + " matches query.\n")
+					has_printed = 1
+			if has_printed == 0:
+				out.insert(INSERT, "No file matches query.\n")
+		else:
+			out.configure(state='normal')
+			out.insert(INSERT, "Please select files!\n")
 	else:
 		out.configure(state='normal')
 		out.insert(INSERT, "No query given!\n")
