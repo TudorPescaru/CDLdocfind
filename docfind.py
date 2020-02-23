@@ -242,7 +242,7 @@ def run():
 			has_printed = 0
 			for i in range(len(query[0])):
 				if query[0][i] is True:
-					out.insert(INSERT, fileselect[i] + " matches query.\n")
+					out.insert(INSERT, files[i] + " matches query.\n")
 					has_printed = 1
 			if has_printed == 0:
 				out.insert(INSERT, "No file matches query.\n")

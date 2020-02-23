@@ -26,7 +26,7 @@ Pyhton is required to be installed for the program to run.
 
 ```
 	$ cd < dir with documents to be scanned >
-	$ wget curl https://github.com/TudorPescaru/CDLdocfind/blob/master/Makefile
+	$ wget https://raw.githubusercontent.com/TudorPescaru/CDLdocfind/master/Makefile
 	$ make
 ```
 

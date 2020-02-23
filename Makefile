@@ -1,3 +1,4 @@
 build:
 	sudo apt-get install python3-tk
-	wget curl https://github.com/TudorPescaru/CDLdocfind/blob/master/docfind.py
+	wget https://raw.githubusercontent.com/TudorPescaru/CDLdocfind//master/docfind.py
+	chmod 744 docfind.py
