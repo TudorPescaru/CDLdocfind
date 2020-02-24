@@ -221,12 +221,15 @@ def run():
 						cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
 
 			# Generating processing-ready list from DB
-
-			cursor.execute("SELECT * FROM WORDVAL;")
-			data = cursor.fetchall()
-			for item in data:
-				if item[0] in query:
-					query[query.index(item[0])] = [True if item[i] == 1 else False  for i in range(1, len(item))]
+			
+			for i in range(len(query)):
+				if query[i].isalpha():
+					word = query[i]
+					query[i] = []
+					for file in fileselect:
+						cursor.execute("""SELECT "%s" FROM WORDVAL WHERE WORD = "%s";""" % (file, word))
+						data = cursor.fetchall()
+						query[i].append(True if data[0][0] == 1 else False)
 
 			# Determine final value list
 
@@ -242,7 +245,7 @@ def run():
 			has_printed = 0
 			for i in range(len(query[0])):
 				if query[0][i] is True:
-					out.insert(INSERT, files[i] + " matches query.\n")
+					out.insert(INSERT, fileselect[i] + " matches query.\n")
 					has_printed = 1
 			if has_printed == 0:
 				out.insert(INSERT, "No file matches query.\n")
