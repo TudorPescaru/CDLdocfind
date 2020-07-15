@@ -104,6 +104,8 @@ def de_sel():
 def find(file, word):
 	with open(file, 'r') as f:
 		for line in f:
+			line = line.translate(str.maketrans('', '', string.punctuation))
+			line = line.lower()
 			if word in line.split():
 				return True
 			elif word.casefold() in line.split():
@@ -188,7 +190,7 @@ def run():
 	out.delete('1.0', END)
 	out.configure(state='disabled')
 	query = inp.get()
-	
+
 	if len(query) > 0:
 
 		# Getting list of selected files and converting the query for use
@@ -216,12 +218,12 @@ def run():
 					for file in fileselect:
 
 						# Populating DB with values for each word
-					
+
 						val = 1 if find(file, query[i]) is True else 0
 						cursor.execute("""UPDATE WORDVAL SET "%s" = "%d" WHERE WORD = "%s";""" % (file, val, query[i]))
 
 			# Generating processing-ready list from DB
-			
+
 			for i in range(len(query)):
 				if query[i].isalpha():
 					word = query[i]
@@ -236,7 +238,7 @@ def run():
 			while len(query) > 1:
 				clear_par(query)
 				query_not(query)
-				query_or(query) 
+				query_or(query)
 				query_and(query)
 
 			# Print files that match query
