@@ -17,13 +17,14 @@ cursor = db.cursor()
 
 # Create primary key column for words
 
-try:
-	cursor.execute("DROP TABLE IF EXISTS WORDVAL")
-	cursor.execute("CREATE TABLE WORDVAL (WORD VARCHAR(50) PRIMARY KEY NOT NULL);")
-	db.commit()
-except Exception:
-	print("DB error")
-	db.rollback()
+cursor.execute(""" SELECT name FROM sqlite_master WHERE type='table' AND name='WORDVAL'; """)
+if cursor.fetchall() is None:
+	try:
+		cursor.execute("CREATE TABLE WORDVAL (WORD VARCHAR(50) PRIMARY KEY NOT NULL);")
+		db.commit()
+	except Exception:
+		print("Database table error.")
+		db.rollback()
 
 # GUI code
 
@@ -82,7 +83,7 @@ for file in files:
 		db.commit()
 	except Exception:
 		db.rollback()
-		print("DB error")
+		print("Column already exists.")
 
 # Function for the select/deselect all button
 
