@@ -89,6 +89,16 @@ for file in files:
 
 isClicked = False
 
+
+def onselect(evt):
+	global isClicked
+	isClicked = True
+	sel_txt.set("Deselect all")
+
+
+filelist.bind('<<ListboxSelect>>', onselect)
+
+
 def de_sel():
 	global isClicked
 	if isClicked is False:
@@ -273,4 +283,5 @@ sel_txt.set("Select all")
 
 program.mainloop()
 
+db.commit()
 db.close()
